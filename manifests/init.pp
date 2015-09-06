@@ -4,7 +4,6 @@ class ntp (
   $config            = $ntp::params::config,
   $config_template   = $ntp::params::config_template,
   $disable_auth      = $ntp::params::disable_auth,
-  $disable_kernel    = $ntp::params::disable_kernel,
   $disable_monitor   = $ntp::params::disable_monitor,
   $fudge             = $ntp::params::fudge,
   $driftfile         = $ntp::params::driftfile,
@@ -33,21 +32,15 @@ class ntp (
   $service_name      = $ntp::params::service_name,
   $stepout           = $ntp::params::stepout,
   $tinker            = $ntp::params::tinker,
-  $tos               = $ntp::params::tos,
-  $tos_minclock      = $ntp::params::tos_minclock,
-  $tos_minsane       = $ntp::params::tos_minsane,
-  $tos_floor         = $ntp::params::tos_floor,
-  $tos_ceiling       = $ntp::params::tos_ceiling,
-  $tos_cohort        = $ntp::params::tos_cohort,
   $udlc              = $ntp::params::udlc,
   $udlc_stratum      = $ntp::params::udlc_stratum,
+  $ntpdate_cron      = 'absent',
 ) inherits ntp::params {
 
   validate_bool($broadcastclient)
   validate_absolute_path($config)
   validate_string($config_template)
   validate_bool($disable_auth)
-  validate_bool($disable_kernel)
   validate_bool($disable_monitor)
   validate_absolute_path($driftfile)
   if $logfile { validate_absolute_path($logfile) }
@@ -74,12 +67,6 @@ class ntp (
   validate_string($service_name)
   if $stepout { validate_numeric($stepout, 65535, 0) }
   validate_bool($tinker)
-  validate_bool($tos)
-  if $tos_minclock { validate_numeric($tos_minclock) }
-  if $tos_minsane { validate_numeric($tos_minsane) }
-  if $tos_floor { validate_numeric($tos_floor) }
-  if $tos_ceiling { validate_numeric($tos_ceiling) }
-  if $tos_cohort { validate_re($tos_cohort, '^[0|1]$', "Must be 0 or 1, got: ${tos_cohort}") }
   validate_bool($udlc)
   validate_array($peers)
 
@@ -92,6 +79,7 @@ class ntp (
   # http://docs.puppetlabs.com/puppet/2.7/reference/lang_containment.html#known-issues
   anchor { 'ntp::begin': } ->
   class { '::ntp::install': } ->
+  class { '::ntp::crontab': } -> 
   class { '::ntp::config': } ~>
   class { '::ntp::service': } ->
   anchor { 'ntp::end': }

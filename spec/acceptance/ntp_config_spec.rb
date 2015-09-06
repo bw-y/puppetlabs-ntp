@@ -6,12 +6,7 @@ when 'FreeBSD'
 when 'Debian'
   line = '0.debian.pool.ntp.org iburst'
 when 'RedHat'
-  case fact('operatingsystem')
-  when 'Fedora'
-    line = '0.fedora.pool.ntp.org'
-  else
-    line = '0.centos.pool.ntp.org'
-  end
+  line = '0.centos.pool.ntp.org'
 when 'Suse'
   line = '0.opensuse.pool.ntp.org'
 when 'Gentoo'
@@ -19,7 +14,7 @@ when 'Gentoo'
 when 'Linux'
   case fact('operatingsystem')
   when 'ArchLinux'
-    line = '0.arch.pool.ntp.org'
+    line = '0.pool.ntp.org'
   when 'Gentoo'
     line = '0.gentoo.pool.ntp.org'
   end
